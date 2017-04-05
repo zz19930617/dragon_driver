@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="dragon_robot">
+
+	<lib_paths >
+    <propagate path="/home/robot/DragonDriver/dragon_ws/devel/lib/libpropagate_lib.so"/>
+    <hw_unit path="/home/robot/DragonDriver/dragon_ws/devel/lib/libhardware_lib.so"/>
+  </lib_paths>
+
+	<propagates name="propagate" >
+		<channel name="pcan" type="middleware::PcanChannel" />
+	</propagates>
+
+	<joint_states name="single_leg">
+		<joint type="middleware::Joint">
+			<parameter name="left_front_hip" actuators="left_front_hip_motor" encoders="left_front_hip_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "left_front_hip_motor" value="1.23" mode="velocity" />
+     	 		</actuator>
+
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_front_hip_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="left_front_knee" actuators="left_front_knee_motor" encoders="left_front_knee_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "left_front_knee_motor" value="2.01" mode="position" />
+      			</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_front_knee_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint">
+			<parameter name="left_back_hip" actuators="left_back_hip_motor" encoders="left_back_hip_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "left_back_hip_motor" value="1.23" mode="velocity" />
+     	 		</actuator>
+
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_back_hip_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="left_back_knee" actuators="left_back_knee_motor" encoders="left_back_knee_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "left_back_knee_motor" value="2.01" mode="position" />
+      			</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_back_knee_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint">
+			<parameter name="right_front_hip" actuators="right_front_hip_motor" encoders="right_front_hip_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "right_front_hip_motor" value="1.23" mode="velocity" />
+     	 		</actuator>
+
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_front_hip_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="right_front_knee" actuators="right_front_knee_motor" encoders="right_front_knee_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "right_front_knee_motor" value="2.01" mode="position" />
+      			</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_front_knee_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint">
+			<parameter name="right_back_hip" actuators="right_back_hip_motor" encoders="right_back_hip_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "right_back_hip_motor" value="1.23" mode="velocity" />
+     	 		</actuator>
+
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_back_hip_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="right_back_knee" actuators="right_back_knee_motor" encoders="right_back_knee_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        			<parameter name = "right_back_knee_motor" value="2.01" mode="position" />
+      			</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_back_knee_encoder" />
+			</encoder>
+		</joint>
+	</joint_states>
+
+</robot>
