@@ -352,7 +352,7 @@ void RosWrapper::cbForDebug(const std_msgs::Float64MultiArrayConstPtr& msg) {
   std::vector<std::string> cmd_name;
   int index = 0;
   for (auto& jnt : robot_->jnt_names_) {
-    Motor::CmdTypeSp cmd(new Motor::CmdType(msg->data[index], Motor::CmdType::MODE_POS_));
+    Motor::CmdTypeSp cmd(new Motor::CmdType(msg->data[index], Motor::CmdType::MODE_VEL_));
     ++index;
     cmd_vec.push_back(cmd);
     cmd_name.push_back(jnt);
