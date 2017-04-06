@@ -141,11 +141,11 @@ TPCANMsg PropagateParser::packagePCAN(const std::string& name, Component<HwComma
     Motor::CmdTypeSp cmd = boost::dynamic_pointer_cast<Motor::CmdType>(itr->second);
     LOG_WARNING << "mode is " << cmd->mode_;
     if (std::string::npos != name.find(KNEE)){
-      if (Motor::CmdType::MODE_POS_ == cmd->mode_){
+      if (Motor::CmdType::MODE_TOR_ == cmd->mode_){
         msg_.DATA[0] = 0x11; // DATA[0] 用于确定膝关节和髋关节
         position_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &position_ , 2 * sizeof(msg_.DATA));
-      } else if (Motor::CmdType::MODE_TOR_ == cmd->mode_){
+      } else if (Motor::CmdType::MODE_VEL_ == cmd->mode_){
         msg_.DATA[0] = 0x21; // DATA[0] 用于确定膝关节和髋关节
         velocity_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &velocity_ , 2 * sizeof(msg_.DATA));

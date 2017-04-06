@@ -16,8 +16,8 @@ MotorState::MotorState(double pos, double vel, double tor)
 MotorState::~MotorState()
 { }
 
-MotorCmd::MotorCmd(double cmd, MODE_)
-    : command_(cmd), mode_(MODE_TOR_)
+MotorCmd::MotorCmd(double cmd, MODE_ mode)
+    : command_(cmd), mode_(mode)
 { }
 
 MotorCmd::~MotorCmd()
