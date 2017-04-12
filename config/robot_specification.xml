@@ -106,6 +106,54 @@
 				<parameter name = "right_back_knee_encoder" />
 			</encoder>
 		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="left_front_yaw" actuators="left_front_yaw_motor" encoders="left_front_yaw_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        		<parameter name = "left_front_yaw_motor" value="2.01" mode="position" />
+      		</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_front_yaw_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="left_back_yaw" actuators="left_back_yaw_motor" encoders="left_back_yaw_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        		<parameter name = "left_back_yaw_motor" value="2.01" mode="position" />
+      		</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "left_back_yaw_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="right_front_yaw" actuators="right_front_yaw_motor" encoders="right_front_yaw_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        		<parameter name = "right_front_yaw_motor" value="2.01" mode="position" />
+      		</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_front_yaw_encoder" />
+			</encoder>
+		</joint>
+
+		<joint type="middleware::Joint" >
+			<parameter name="right_back_yaw" actuators="right_back_yaw_motor" encoders="right_back_yaw_encoder" />
+
+			<actuator type="middleware::Motor" channel="pcan">
+        		<parameter name = "right_back_yaw_motor" value="2.01" mode="position" />
+      		</actuator>
+      
+			<encoder type="middleware::Encoder" channel="pcan">
+				<parameter name = "right_back_yaw_encoder" />
+			</encoder>
+		</joint>
 	</joint_states>
 
 </robot>

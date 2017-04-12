@@ -23,22 +23,22 @@ PropagateParser::~PropagateParser() {
 bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_composite){
   //DATA[0]确定四条腿
    switch(msg.DATA[0]) {
-   case 0x64:
+   case 0x62:
    case 0x42:{
      tmp_name_ = LEFT_FRONT;
      break;
    }
-   case 0x65:
+   case 0x63:
    case 0x43:{
      tmp_name_ = LEFT_BACK;
      break ;
    }
-   case 0x66:
+   case 0x64:
    case 0x44:{
      tmp_name_ = RIGHT_FRONT;
      break;
    }
-   case 0x67:
+   case 0x65:
    case 0x45:{
      tmp_name_ = RIGHT_BACK;
      break;
@@ -50,7 +50,7 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
    if(msg.DATA[0] <= 0x45 && msg.DATA[0] >= 0x42 ){
      dataType_ = "position";
    }
-   else if(msg.DATA[0] >=0x64 && msg.DATA[0] <= 0x67){
+   else if(msg.DATA[0] >=0x62 && msg.DATA[0] <= 0x65){
      dataType_ = "velocity";
    }
    else{
@@ -82,7 +82,7 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
        act_state->pos_ = (double) (position_)/10000.0;
        //act_state->vel_ = (act_state->pos_ - last_position_) * 1000 /std::chrono::duration_cast<std::chrono::duration<double>>
            //(current_time - act_state->previous_time_).count();
-       act_state->vel_ = (double)(velocity_)/10000.0;
+       act_state->vel_ = (double)(velocity_);
        act_state->previous_time_ = current_time;
      }
 
@@ -141,7 +141,7 @@ TPCANMsg PropagateParser::packagePCAN(const std::string& name, Component<HwComma
     Motor::CmdTypeSp cmd = boost::dynamic_pointer_cast<Motor::CmdType>(itr->second);
     LOG_WARNING << "mode is " << cmd->mode_;
     if (std::string::npos != name.find(KNEE)){
-      if (Motor::CmdType::MODE_TOR_ == cmd->mode_){
+      if (Motor::CmdType::MODE_POS_ == cmd->mode_){
         msg_.DATA[0] = 0x11; // DATA[0] 用于确定膝关节和髋关节
         position_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &position_ , 2 * sizeof(msg_.DATA));
@@ -155,7 +155,7 @@ TPCANMsg PropagateParser::packagePCAN(const std::string& name, Component<HwComma
         msg_.DATA[0] = 0x12; // DATA[0] 用于确定膝关节和髋关节
         position_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &position_ , 2 * sizeof(msg_.DATA));
-      } else if (Motor::CmdType::MODE_TOR_ == cmd->mode_) {
+      } else if (Motor::CmdType::MODE_VEL_ == cmd->mode_) {
         msg_.DATA[0] = 0x22; // DATA[0] 用于确定膝关节和髋关节
         velocity_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &velocity_ , 2 * sizeof(msg_.DATA));
