@@ -138,6 +138,16 @@ TPCANMsg PropagateParser::packagePCAN(const std::string& name, Component<HwComma
         velocity_ = 10000 * abs(cmd->command_);
         memcpy(msg_.DATA + 3 , &velocity_ , 2 * sizeof(msg_.DATA));
       }
+    } else if (std::string::npos != name.find(YAW)) {
+      if (Motor::CmdType::MODE_POS_ == cmd->mode_){
+        msg_.DATA[0] = 0x13; // DATA[0] 用于确定膝关节和髋关节,yaw
+        position_ = 10000 * abs(cmd->command_);
+        memcpy(msg_.DATA + 3 , &position_ , 2 * sizeof(msg_.DATA));
+      } else if (Motor::CmdType::MODE_VEL_ == cmd->mode_) {
+        msg_.DATA[0] = 0x23; // DATA[0] 用于确定膝关节和髋关节
+        velocity_ = 10000 * abs(cmd->command_);
+        memcpy(msg_.DATA + 3 , &velocity_ , 2 * sizeof(msg_.DATA));
+      }
     }
   }
   return msg_;

@@ -16,6 +16,7 @@
 
 #define KNEE "knee"
 #define HIP "hip"
+#define YAW "yaw"
 #define LEFT_FRONT "left_front"
 #define LEFT_BACK "left_back"
 #define RIGHT_FRONT "right_front"
