@@ -13,7 +13,8 @@ PropagateParser::PropagateParser() {
   // TODO Auto-generated constructor stub
   position_ = 0;
   last_position_ = 0;
-  tmp_name_ = "left_front_hip_encoder";
+  leg_name_ = "left_front";
+  joint_name_ = "_knee";
 }
 
 PropagateParser::~PropagateParser() {
@@ -22,35 +23,48 @@ PropagateParser::~PropagateParser() {
 
 bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_composite){
   //DATA[0]确定四条腿
-   switch(msg.DATA[0]) {
-   case 0x62:
-   case 0x42:{
-     tmp_name_ = LEFT_FRONT;
+   switch(msg.ID) {
+   case 0x02:{
+     leg_name_ = LEFT_FRONT;
      break;
    }
-   case 0x63:
-   case 0x43:{
-     tmp_name_ = LEFT_BACK;
+   case 0x03:{
+     leg_name_ = LEFT_BACK;
      break ;
    }
-   case 0x64:
-   case 0x44:{
-     tmp_name_ = RIGHT_FRONT;
+   case 0x04:{
+     leg_name_ = RIGHT_FRONT;
      break;
    }
-   case 0x65:
-   case 0x45:{
-     tmp_name_ = RIGHT_BACK;
+   case 0x05:{
+     leg_name_ = RIGHT_BACK;
      break;
    }
    default:break;
    }
 
+   switch(msg.DATA[0]){
+    case 0x41:
+    case 0x61:{
+      joint_name_ = "_knee";
+      break;
+    }
+    case 0x42:
+    case 0x62:{
+      joint_name_ = "_hip";
+      break;
+    }
+    case 0x43:
+    case 0x63:{
+      joint_name_ = "_yaw";
+    }
+    default:break;
+   }
    //0x42~0x45表示位置信息， 0x64~0x67表示速度信息
-   if(msg.DATA[0] <= 0x45 && msg.DATA[0] >= 0x42 ){
+   if(msg.DATA[0] <= 0x43 && msg.DATA[0] >= 0x41 ){
      dataType_ = "position";
    }
-   else if(msg.DATA[0] >=0x62 && msg.DATA[0] <= 0x65){
+   else if(msg.DATA[0] >=0x61 && msg.DATA[0] <= 0x63){
      dataType_ = "velocity";
    }
    else{
@@ -59,25 +73,17 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
    //names_.push_back(tmp_name_ + "_knee_encoder");
    //names_.push_back(tmp_name_ + "_hip_encoder");
   // for(const std::string& name : names_){
-     name = tmp_name_ + "_knee";
+     name = leg_name_ + joint_name_;
      auto itr = state_composite.find(name);
        if (state_composite.end() != itr){
        Encoder::StateTypeSp act_state
         = boost::dynamic_pointer_cast<Encoder::StateType>(itr->second);
        auto current_time = std::chrono::high_resolution_clock::now();
-       if (std::string::npos != name.find(KNEE)){
          if ("position" == dataType_){
            memcpy(&position_ , msg.DATA+3, 2 * sizeof(position_));
          }else if ("velocity" == dataType_){
            memcpy(&velocity_ , msg.DATA+3, 2 * sizeof(velocity_));
-         }
-      } else {
-        if ("position" == dataType_){
-          memcpy(&position_, msg.DATA+5, 2*sizeof(position_));
-        }else if ("velocity" == dataType_){
-          memcpy(&velocity_, msg.DATA+5, 2*sizeof(velocity_));
-        }
-      }
+         } 
        last_position_ = act_state->pos_;
        act_state->pos_ = (double) (position_)/10000.0;
        //act_state->vel_ = (act_state->pos_ - last_position_) * 1000 /std::chrono::duration_cast<std::chrono::duration<double>>
@@ -86,34 +92,6 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
        act_state->previous_time_ = current_time;
      }
 
-
-      name = tmp_name_ + "_hip";
-      itr = state_composite.find(name);
-       if (state_composite.end() != itr){
-       Encoder::StateTypeSp act_state
-        = boost::dynamic_pointer_cast<Encoder::StateType>(itr->second);
-       auto current_time = std::chrono::high_resolution_clock::now();
-       if (std::string::npos != name.find(KNEE)){
-         if ("position" == dataType_){
-           memcpy(&position_ , msg.DATA+3, 2 * sizeof(position_));
-         }else if ("velocity" == dataType_){
-           memcpy(&velocity_ , msg.DATA+3, 2 * sizeof(velocity_));
-         }
-      } else {
-        if ("position" == dataType_){
-          memcpy(&position_, msg.DATA+5, 2*sizeof(position_));
-        }else if ("velocity" == dataType_){
-          memcpy(&velocity_, msg.DATA+5, 2*sizeof(velocity_));
-        }
-      }
-       last_position_ = act_state->pos_;
-       act_state->pos_ = (double) (position_)/10000.0;
-       //act_state->vel_ = (act_state->pos_ - last_position_) * 1000 /std::chrono::duration_cast<std::chrono::duration<double>>
-           //(current_time - act_state->previous_time_).count();
-       act_state->vel_ = (double)(velocity_)/10000.0;
-       act_state->previous_time_ = current_time;
-     }
- //} for
    return true;
 }
 

@@ -36,7 +36,8 @@ private:
   short velocity_;
   double last_position_;
   std::vector <std::string> names_;
-  std::string tmp_name_;
+  std::string leg_name_;
+  std::string joint_name_;
   std::string name;
   std::string dataType_ = "position";
 };
