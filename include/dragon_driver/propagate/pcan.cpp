@@ -59,7 +59,12 @@ bool PcanChannel::read() {
     usleep(1000);
   }
   //LOG_INFO<<"PCAN READ OK";
-  //printf("read_msg is: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\n", rec_msg_.DATA[0],rec_msg_.DATA[1],rec_msg_.DATA[2],rec_msg_.DATA[3],rec_msg_.DATA[4],rec_msg_.DATA[5],rec_msg_.DATA[6]);
+  //if (rec_msg_.DATA[0] == 0x62){
+    //printf("msg_ID is : 0x%02x ", rec_msg_.ID);
+    //printf("read_msg is: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\n",
+   //rec_msg_.DATA[0],rec_msg_.DATA[1],rec_msg_.DATA[2],rec_msg_.DATA[3],
+   //rec_msg_.DATA[4],rec_msg_.DATA[5],rec_msg_.DATA[6]);
+  //}
   return propagate_parser->parsePcan(rec_msg_ , state_composite_);
 }
 

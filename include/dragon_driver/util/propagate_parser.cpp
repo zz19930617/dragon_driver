@@ -12,9 +12,12 @@ namespace middleware {
 PropagateParser::PropagateParser() {
   // TODO Auto-generated constructor stub
   position_ = 0;
-  last_position_ = 0;
+  last_position_ = 0.0;
+  velocity_ = 0;
+  last_velocity_ = 0.0;
   leg_name_ = "left_front";
   joint_name_ = "_knee";
+  dataType_ = "position";
 }
 
 PropagateParser::~PropagateParser() {
@@ -57,6 +60,7 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
     case 0x43:
     case 0x63:{
       joint_name_ = "_yaw";
+      break;
     }
     default:break;
    }
@@ -68,27 +72,31 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
      dataType_ = "velocity";
    }
    else{
-     //LOG_WARNING << "msg type is wrong!";
+      ;
    }
-   //names_.push_back(tmp_name_ + "_knee_encoder");
-   //names_.push_back(tmp_name_ + "_hip_encoder");
-  // for(const std::string& name : names_){
-     name = leg_name_ + joint_name_;
-     auto itr = state_composite.find(name);
-       if (state_composite.end() != itr){
-       Encoder::StateTypeSp act_state
+
+    name = leg_name_ + joint_name_;
+    auto itr = state_composite.find(name);
+    if (state_composite.end() != itr){
+      Encoder::StateTypeSp act_state
         = boost::dynamic_pointer_cast<Encoder::StateType>(itr->second);
        auto current_time = std::chrono::high_resolution_clock::now();
-         if ("position" == dataType_){
-           memcpy(&position_ , msg.DATA+3, 2 * sizeof(position_));
-         }else if ("velocity" == dataType_){
-           memcpy(&velocity_ , msg.DATA+3, 2 * sizeof(velocity_));
-         } 
-       last_position_ = act_state->pos_;
-       act_state->pos_ = (double) (position_)/10000.0;
+
+      last_position_ = act_state->pos_;
+      last_velocity_ = act_state->vel_;      
+
+      if ("position" == dataType_){
+        memcpy(&position_ , msg.DATA+3, 2 * sizeof(position_));
+        act_state->pos_ = (double)(position_);
+        act_state->vel_ = last_velocity_;
+
+      } else if ("velocity" == dataType_){
+        memcpy(&velocity_ , msg.DATA+3, 2 * sizeof(velocity_));
+        act_state->pos_ = last_position_;
+        act_state->vel_ = (double)(velocity_);
+      }      
        //act_state->vel_ = (act_state->pos_ - last_position_) * 1000 /std::chrono::duration_cast<std::chrono::duration<double>>
            //(current_time - act_state->previous_time_).count();
-       act_state->vel_ = (double)(velocity_);
        act_state->previous_time_ = current_time;
      }
 

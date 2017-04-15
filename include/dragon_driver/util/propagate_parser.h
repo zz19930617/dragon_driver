@@ -36,11 +36,12 @@ private:
   short position_;
   short velocity_;
   double last_position_;
+  double last_velocity_;
   std::vector <std::string> names_;
   std::string leg_name_;
   std::string joint_name_;
   std::string name;
-  std::string dataType_ = "position";
+  std::string dataType_ ;
 };
 
 } /* namespace middleware */
