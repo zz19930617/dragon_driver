@@ -50,6 +50,7 @@ private:
   // 发布实时消息， 例如"/joint_states"
   void publishRTMsg();
   void rosControlLoop();
+  void publishEleCurMsg();
 
   /**
    * FollowJointTrajectory实际执行线程
@@ -88,6 +89,7 @@ private:
   std::chrono::milliseconds rt_duration_; // 实时消息发布频率， 默认是50Hz(使用周期表示, 即20ms）
   std::chrono::milliseconds ros_ctrl_duration_; // ros_control_thread_循环频率， 默认是100Hz(使用周期表示, 即10ms）
   std::thread* rt_publish_thread_; // 该线程发布实时消息
+  std::thread* cur_publish_thread_;//该线程发布电流信息
   std::thread* ros_control_thread_; // 若启动ros_control机制， 该线程维护ros_control的正常流程
   bool use_ros_control_;
   boost::shared_ptr<RosRobotHW> hardware_interface_;

@@ -23,8 +23,9 @@ struct EncoderState : public HwState {
   std::atomic<double> vel_;
   // 计算速度的辅助变量, 保存前一次更新的时间
   std::chrono::high_resolution_clock::time_point previous_time_;
-
-  EncoderState(double pos = 0, double vel = 0);
+  //保存电源的电流值
+  std::atomic<double> ele_current_;
+  EncoderState(double pos = 0, double vel = 0 , double ele_current_ = 0);
   ~EncoderState();
 };
 

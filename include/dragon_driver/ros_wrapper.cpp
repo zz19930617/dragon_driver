@@ -97,6 +97,9 @@ bool RosWrapper::start() {
           boost::bind(&RosWrapper::publishRTMsg, this));
       LOG_INFO << "The action server for this driver has been started";
     }
+    //使用cur_publish_thread来发布电流信息
+    cur_publish_thread_ = new std::thread(
+        boost::bind(&RosWrapper::publishEleCurMsg, this));
   } else {
     LOG_ERROR << "The robot thread which for the real-time message has failed";
     return false;
@@ -121,6 +124,11 @@ void RosWrapper::halt() {
     ros_control_thread_->join();
     delete ros_control_thread_;
     ros_control_thread_ = nullptr;
+  }
+  if (nullptr != cur_publish_thread_) {
+    cur_publish_thread_->join();
+    delete cur_publish_thread_;
+    cur_publish_thread_ = nullptr;
   }
   controller_manager_.reset();
   hardware_interface_.reset();
@@ -281,6 +289,15 @@ void RosWrapper::publishRTMsg() {
       std::this_thread::sleep_for(sleep_time);
     }
     t0 = std::chrono::high_resolution_clock::now();
+  }
+}
+
+void RosWrapper::publishEleCurMsg(){
+  ros::Publisher cur_pub = nh_.advertise<std_msgs::Float64MultiArray>("cur_state", 1);
+  while (ros::ok()) {
+    std_msgs::Float64MultiArray cur_msg;
+    robot_->getCurState(cur_msg);
+    cur_pub.publish(cur_msg);
   }
 }
 

@@ -9,8 +9,8 @@
 
 namespace middleware {
 
-EncoderState::EncoderState(double pos, double vel)
-  : pos_(pos), vel_(vel),
+EncoderState::EncoderState(double pos, double vel, double ele_cur)
+  : pos_(pos), vel_(vel),ele_current_(ele_cur),
     previous_time_(std::chrono::high_resolution_clock::now())
 { };
 
@@ -40,7 +40,7 @@ HwStateSp Encoder::getStataHandle() {
 
 HwStateSp Encoder::getState(const std::string& name) {
   if (0 == name.compare(name_)) {
-    return HwStateSp(new StateType(state_->pos_, state_->vel_));
+    return HwStateSp(new StateType(state_->pos_, state_->vel_, state_->ele_current_));
   } else {
     LOG_WARNING << "Requset the ERROR name state (actual vs request): ("
         << name_ << " vs " << name << ")";

@@ -13,6 +13,7 @@
 #include <ros/ros.h>
 #include <boost/shared_ptr.hpp>
 #include <sensor_msgs/JointState.h>
+#include <std_msgs/Float64MultiArray.h>
 
 namespace middleware {
 
@@ -54,6 +55,7 @@ public:
    * 获取Joint的名称, 位置, 速度, 力矩及JointState等数据
    * 推荐直接使用获取JointState, 可以一次获取全部数据
    */
+  void getCurState(std_msgs::Float64MultiArray&);
   void getJointNames(std::vector<std::string>&);
   void getJointPositions(std::vector<double>&);
   void getJointVelocities(std::vector<double>&);

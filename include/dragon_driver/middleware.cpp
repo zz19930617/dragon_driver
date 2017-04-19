@@ -261,6 +261,20 @@ void Middleware::getJointStates(sensor_msgs::JointState& jnt_state) {
   }
 }
 
+void Middleware::getCurState(std_msgs::Float64MultiArray& cur_state){
+  cur_state.data.reserve(jnt_names_.size());
+
+  for (auto& jnt : jnt_names_) {
+    Encoder::StateTypeSp state
+    = boost::dynamic_pointer_cast<Encoder::StateType>(
+        hw_unit_->getState(jnt));
+    if (nullptr != state){
+      cur_state.data.push_back(state->ele_current_);
+    } else
+      LOG_ERROR << "No \"" << jnt <<"\"joint ";
+  }
+}
+
 void Middleware::stopTraj() {
   executing_traj_ = false;
 }
