@@ -15,6 +15,8 @@ PropagateParser::PropagateParser() {
   last_position_ = 0.0;
   velocity_ = 0;
   last_velocity_ = 0.0;
+  ele_current_ = 0;
+  last_ele_current_ = 0.0;
   leg_name_ = "left_front";
   joint_name_ = "_knee";
   dataType_ = "position";
@@ -25,6 +27,9 @@ PropagateParser::~PropagateParser() {
 }
 
 bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_composite){
+  name = "";
+  leg_name_ = "";
+  joint_name_ = "";
   //DATA[0]确定四条腿
    switch(msg.ID) {
    case 0x02:{
@@ -64,6 +69,31 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
     }
     default:break;
    }
+
+   //msg.DATA[0] deside ele_cur
+   switch(msg.DATA[0]) {
+    case 0x81:{
+      leg_name_ = LEFT_BACK;
+      joint_name_ = "_hip";
+      break;
+    }
+    case 0x82:{
+      leg_name_ = LEFT_BACK;
+      joint_name_ = "_knee";
+      break;
+    }
+    case 0x83: {
+      leg_name_ = LEFT_BACK;
+      joint_name_ = "_yaw";
+      break;
+    }
+    case 0x84:{
+      leg_name_ = LEFT_FRONT;
+      joint_name_ = "_hip";
+      break;
+    }
+    default:break;
+   }
    //0x42~0x45表示位置信息， 0x64~0x67表示速度信息
    if(msg.DATA[0] <= 0x43 && msg.DATA[0] >= 0x41 ){
      dataType_ = "position";
@@ -71,11 +101,16 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
    else if(msg.DATA[0] >=0x61 && msg.DATA[0] <= 0x63){
      dataType_ = "velocity";
    }
-   else{
-      ;
+   else if(msg.DATA[0] >= 0x81 && msg.DATA[0] <=0x84){
+      dataType_ = "ele_current";
+      //printf("name is %s",name);
+      printf("write_msg is: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\n",
+       msg.DATA[0],msg.DATA[1],msg.DATA[2],msg.DATA[3],msg.DATA[4],
+       msg.DATA[5],msg.DATA[6]);
    }
 
     name = leg_name_ + joint_name_;
+    LOG_WARNING << "name is " << name; 
     auto itr = state_composite.find(name);
     if (state_composite.end() != itr){
       Encoder::StateTypeSp act_state
@@ -83,18 +118,26 @@ bool PropagateParser::parsePcan(TPCANMsg& msg ,  Component<HwState>& state_compo
        auto current_time = std::chrono::high_resolution_clock::now();
 
       last_position_ = act_state->pos_;
-      last_velocity_ = act_state->vel_;      
+      last_velocity_ = act_state->vel_;
+      last_ele_current_ = act_state->ele_current_;      
 
       if ("position" == dataType_){
         memcpy(&position_ , msg.DATA+3, 2 * sizeof(position_));
         act_state->pos_ = (double)(position_);
         act_state->vel_ = last_velocity_;
+        act_state->ele_current_ = last_ele_current_;
 
       } else if ("velocity" == dataType_){
         memcpy(&velocity_ , msg.DATA+3, 2 * sizeof(velocity_));
         act_state->pos_ = last_position_;
         act_state->vel_ = (double)(velocity_);
-      }      
+        act_state->ele_current_ = last_ele_current_;
+      } else if ("ele_current" == dataType_){
+        memcpy(&ele_current_, msg.DATA+3, 2*sizeof(ele_current_));
+        act_state->ele_current_ = (double)(ele_current_);
+        act_state->pos_ = last_position_;
+        act_state->vel_ = last_velocity_;
+      }   
        //act_state->vel_ = (act_state->pos_ - last_position_) * 1000 /std::chrono::duration_cast<std::chrono::duration<double>>
            //(current_time - act_state->previous_time_).count();
        act_state->previous_time_ = current_time;

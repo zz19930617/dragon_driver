@@ -41,7 +41,9 @@ bool PcanChannel::write(const std::vector<std::string>& names) {
       msg_ = propagate_parser->packagePCAN(name, cmd_composite_);
       pcan_status_=CAN_Write(PCAN_USBBUS1, &msg_);
       printf("leg is 0x%02x ", msg_.ID);
-      printf("write_msg is: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\n", msg_.DATA[0],msg_.DATA[1],msg_.DATA[2],msg_.DATA[3],msg_.DATA[4],msg_.DATA[5],msg_.DATA[6]);
+      printf("write_msg is: 0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x,0x%02x\n",
+       msg_.DATA[0],msg_.DATA[1],msg_.DATA[2],msg_.DATA[3],msg_.DATA[4],
+       msg_.DATA[5],msg_.DATA[6]);
       if (PCAN_ERROR_OK != pcan_status_) {
         LOG(ERROR) << "PCAN_WRITE IS FALSE !";
       }

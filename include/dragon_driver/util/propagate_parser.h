@@ -35,8 +35,10 @@ private:
   TPCANMsg msg_;
   short position_;
   short velocity_;
+  short ele_current_;
   double last_position_;
   double last_velocity_;
+  double last_ele_current_;
   std::vector <std::string> names_;
   std::string leg_name_;
   std::string joint_name_;
